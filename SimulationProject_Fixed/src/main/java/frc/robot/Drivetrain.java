@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,10 +39,20 @@ public class Drivetrain {
   private static final double kWheelRadius = 0.0508;
   private static final int kEncoderResolution = -4096;
 
-  private final PWMSparkMax m_leftLeader = new PWMSparkMax(1);
-  private final PWMSparkMax m_leftFollower = new PWMSparkMax(2);
-  private final PWMSparkMax m_rightLeader = new PWMSparkMax(3);
-  private final PWMSparkMax m_rightFollower = new PWMSparkMax(4);
+  private final SparkMax m_leftLeader = new SparkMax(10, MotorType.kBrushless);
+  private final SparkMax m_leftFollower = new SparkMax(11, MotorType.kBrushless);
+  private final SparkMax m_rightLeader = new SparkMax(20, MotorType.kBrushless);
+  private final SparkMax m_rightFollower = new SparkMax(21, MotorType.kBrushless);
+
+  private final SparkMaxConfig m_leftLeaderConfig = new SparkMaxConfig();
+  private final SparkMaxConfig m_leftFollowerConfig = new SparkMaxConfig();
+  private final SparkMaxConfig m_rightLeaderConfig = new SparkMaxConfig();
+  private final SparkMaxConfig m_rightFollowerConfig = new SparkMaxConfig();
+
+  // private final PWMSparkMax m_leftLeader = new PWMSparkMax(1);
+  // private final PWMSparkMax m_leftFollower = new PWMSparkMax(2);
+  // private final PWMSparkMax m_rightLeader = new PWMSparkMax(3);
+  // private final PWMSparkMax m_rightFollower = new PWMSparkMax(4);
 
   private final Encoder m_leftEncoder = new Encoder(0, 1);
   private final Encoder m_rightEncoder = new Encoder(2, 3);
@@ -71,8 +85,17 @@ public class Drivetrain {
 
   /** Subsystem constructor. */
   public Drivetrain() {
-    m_leftLeader.addFollower(m_leftFollower);
-    m_rightLeader.addFollower(m_rightFollower);
+
+    m_leftFollowerConfig.idleMode(IdleMode.kCoast);
+    m_leftLeaderConfig.idleMode(IdleMode.kCoast);
+    m_rightFollowerConfig.idleMode(IdleMode.kCoast);
+    m_rightLeaderConfig.idleMode(IdleMode.kCoast);
+
+
+
+
+    // m_leftLeader.addFollower(m_leftFollower);
+    // m_rightLeader.addFollower(m_rightFollower);
 
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -142,6 +165,7 @@ public class Drivetrain {
     m_drivetrainSimulator.setInputs(
         m_leftLeader.get() * RobotController.getInputVoltage(),
         m_rightLeader.get() * RobotController.getInputVoltage());
+    m_leftLeader.iterate(kMaxAngularSpeed, :12, :0.02);
     m_drivetrainSimulator.update(0.02);
 
     m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
