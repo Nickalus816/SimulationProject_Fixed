@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -22,7 +23,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
@@ -90,7 +90,8 @@ public class Drivetrain {
     m_leftLeaderConfig.idleMode(IdleMode.kCoast);
     m_rightFollowerConfig.idleMode(IdleMode.kCoast);
     m_rightLeaderConfig.idleMode(IdleMode.kCoast);
-
+    m_leftFollowerConfig.follow(m_leftLeader);
+    m_rightFollowerConfig.follow(m_rightLeader);
 
 
 
@@ -165,7 +166,7 @@ public class Drivetrain {
     m_drivetrainSimulator.setInputs(
         m_leftLeader.get() * RobotController.getInputVoltage(),
         m_rightLeader.get() * RobotController.getInputVoltage());
-    m_leftLeader.iterate(kMaxAngularSpeed, :12, :0.02);
+    
     m_drivetrainSimulator.update(0.02);
 
     m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
